@@ -1,0 +1,5 @@
+{
+  "name": "Service Monitor Portal",
+  "description": "A centralized dashboard for monitoring remote app services with role-based access control and admin management.",
+  "requestFramePermissions": []
+}

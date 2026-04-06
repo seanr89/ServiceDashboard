@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and role information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email", "description": "User email" },
+        "role": { "type": "string", "enum": ["admin", "viewer"], "description": "User role for access control" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Remote app service information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique service identifier" },
+        "name": { "type": "string", "description": "Service name" },
+        "status": { "type": "string", "enum": ["online", "offline", "maintenance"], "description": "Current operational status" },
+        "version": { "type": "string", "description": "Service version string" },
+        "lastUpdated": { "type": "string", "format": "date-time", "description": "Last status update timestamp" }
+      },
+      "required": ["id", "name", "status", "version", "lastUpdated"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "User profiles and roles"
+    },
+    "/services/{serviceId}": {
+      "schema": "Service",
+      "description": "Monitored services"
+    }
+  }
+}
