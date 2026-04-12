@@ -2,23 +2,15 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
-import admin from "firebase-admin";
-import firebaseConfig from "./firebase-applet-config.json" assert { type: "json" };
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize Firebase Admin
-// Note: In this environment, we use the project ID. 
-// Real-world apps would use a service account key.
-if (!admin.apps.length) {
-  admin.initializeApp({
-    projectId: firebaseConfig.projectId,
-  });
-}
-
-const auth = admin.auth();
-const db = admin.firestore();
+let services: any[] = [
+  { id: 'ex-1', name: 'Authentication API', status: 'online', version: 'v2.4.1', lastUpdated: { seconds: Date.now() / 1000 } },
+  { id: 'ex-2', name: 'Payment Gateway', status: 'maintenance', version: 'v1.0.8', lastUpdated: { seconds: (Date.now() - 3600000) / 1000 } },
+  { id: 'ex-3', name: 'Legacy Database', status: 'offline', version: 'v0.9.2', lastUpdated: { seconds: (Date.now() - 7200000) / 1000 } },
+  { id: 'ex-4', name: 'Image Processing', status: 'online', version: 'v3.1.0', lastUpdated: { seconds: Date.now() / 1000 } },
+];
 
 async function startServer() {
   const app = express();
@@ -27,37 +19,23 @@ async function startServer() {
   app.use(express.json());
 
   // API Routes
-  app.post("/api/sync-user", async (req, res) => {
-    const { idToken } = req.body;
-    if (!idToken) return res.status(400).json({ error: "Missing ID token" });
+  app.get("/api/services", (req, res) => {
+    res.json(services);
+  });
 
-    try {
-      const decodedToken = await auth.verifyIdToken(idToken);
-      const { uid, email } = decodedToken;
+  app.post("/api/services", (req, res) => {
+    const newService = {
+      id: Math.random().toString(36).substring(7),
+      ...req.body,
+      lastUpdated: { seconds: Date.now() / 1000 }
+    };
+    services.push(newService);
+    res.json(newService);
+  });
 
-      // Mock external API call to check roles
-      // In a real app, this would be a fetch to another service
-      let role = "admin";
-      if (email === "srafferty89@gmail.com" || email?.endsWith("@admin.com")) {
-        role = "admin";
-      }
-
-      // Update custom claims
-      await auth.setCustomUserClaims(uid, { role });
-
-      // Sync to Firestore
-      await db.collection("users").doc(uid).set({
-        uid,
-        email,
-        role,
-        lastLogin: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
-
-      res.json({ success: true, role });
-    } catch (error) {
-      console.error("Error syncing user:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
+  app.delete("/api/services/:id", (req, res) => {
+    services = services.filter(s => s.id !== req.params.id);
+    res.json({ success: true });
   });
 
   // Vite middleware for development

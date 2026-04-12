@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from "firebase/auth";
-import { auth, db } from "./lib/firebase";
-import { doc, getDoc, onSnapshot, collection } from "firebase/firestore";
-import { LogIn, LogOut, LayoutDashboard, Settings, ShieldCheck, Activity, Server, Plus, Trash2, RefreshCw } from "lucide-react";
+import { LayoutDashboard, Settings, Activity, Server, Plus, Trash2, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "./lib/utils";
 
@@ -18,69 +15,8 @@ const LoadingScreen = () => (
   </div>
 );
 
-const LoginPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      
-      // Sync user with backend to update claims and role
-      const response = await fetch("/api/sync-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-      
-      if (!response.ok) throw new Error("Failed to sync user data");
-      
-      // Force token refresh to get new claims
-      await result.user.getIdToken(true);
-    } catch (err: any) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 p-8 text-center"
-      >
-        <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <ShieldCheck className="w-8 h-8 text-blue-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Service Monitor Portal</h1>
-        <p className="text-slate-500 mb-8">Sign in to access the service dashboard and management tools.</p>
-        
-        {error && (
-          <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg">
-            {error}
-          </div>
-        )}
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
-          Continue with Google
-        </button>
-      </motion.div>
-    </div>
-  );
-};
-
-const Navbar = ({ user, role }: { user: User, role: string | null }) => {
+const Navbar = () => {
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,26 +31,11 @@ const Navbar = ({ user, role }: { user: User, role: string | null }) => {
                 <LayoutDashboard className="w-4 h-4" />
                 Dashboard
               </Link>
-              {role === "admin" && (
-                <Link to="/admin" className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
-                  <Settings className="w-4 h-4" />
-                  Admin Portal
-                </Link>
-              )}
+              <Link to="/admin" className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Admin Portal
+              </Link>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex flex-col items-end mr-2">
-              <span className="text-sm font-medium text-slate-900">{user.displayName}</span>
-              <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">{role || "Viewer"}</span>
-            </div>
-            <button
-              onClick={() => signOut(auth)}
-              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              title="Sign Out"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </div>
@@ -126,41 +47,82 @@ const Dashboard = () => {
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [showExamples, setShowExamples] = useState(false);
+
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "services"), (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setServices(data);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    const fetchServices = async () => {
+      try {
+        const res = await fetch('/api/services');
+        const data = await res.json();
+        setServices(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
   }, []);
+
+  const exampleServices = [
+    { id: 'ex-1', name: 'Authentication API', status: 'online', version: 'v2.4.1', lastUpdated: { seconds: Date.now() / 1000 } },
+    { id: 'ex-2', name: 'Payment Gateway', status: 'maintenance', version: 'v1.0.8', lastUpdated: { seconds: (Date.now() - 3600000) / 1000 } },
+    { id: 'ex-3', name: 'Legacy Database', status: 'offline', version: 'v0.9.2', lastUpdated: { seconds: (Date.now() - 7200000) / 1000 } },
+    { id: 'ex-4', name: 'Image Processing', status: 'online', version: 'v3.1.0', lastUpdated: { seconds: Date.now() / 1000 } },
+  ];
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading services...</div>;
 
+  const displayServices = services.length > 0 ? services : (showExamples ? exampleServices : []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Service Status</h1>
-        <p className="text-slate-500">Real-time monitoring of application services.</p>
+      <header className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Service Status</h1>
+          <p className="text-slate-500">Real-time monitoring of application services.</p>
+        </div>
+        {services.length === 0 && (
+          <button 
+            onClick={() => setShowExamples(!showExamples)}
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 px-4 py-2 rounded-xl transition-colors"
+          >
+            {showExamples ? "Hide Examples" : "Show Examples"}
+          </button>
+        )}
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {services.length === 0 ? (
+        {displayServices.length === 0 ? (
           <div className="col-span-full py-12 text-center bg-white rounded-2xl border border-dashed border-slate-300">
             <Server className="w-12 h-12 text-slate-300 mx-auto mb-4" />
             <p className="text-slate-500">No services configured yet.</p>
+            <button 
+              onClick={() => setShowExamples(true)}
+              className="mt-4 text-sm font-bold text-blue-600 hover:underline"
+            >
+              View example widgets
+            </button>
           </div>
         ) : (
-          services.map((service) => (
+          displayServices.map((service) => (
             <motion.div
               key={service.id}
               layout
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+              className={cn(
+                "bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow relative",
+                service.id.startsWith('ex-') && "border-blue-200 bg-blue-50/30"
+              )}
             >
+              {service.id.startsWith('ex-') && (
+                <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                  EXAMPLE
+                </div>
+              )}
               <div className="flex justify-between items-start mb-4">
-                <div className="p-2 bg-slate-50 rounded-lg">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
                   <Server className="w-6 h-6 text-slate-600" />
                 </div>
                 <div className={cn(
@@ -198,11 +160,18 @@ const AdminPortal = () => {
   const [newService, setNewService] = useState({ name: "", version: "", status: "online" });
   const [loading, setLoading] = useState(false);
 
+  const fetchServices = async () => {
+    try {
+      const res = await fetch('/api/services');
+      const data = await res.json();
+      setServices(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "services"), (snapshot) => {
-      setServices(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
-    return () => unsubscribe();
+    fetchServices();
   }, []);
 
   const handleAddService = async (e: React.FormEvent) => {
@@ -210,12 +179,13 @@ const AdminPortal = () => {
     if (!newService.name || !newService.version) return;
     setLoading(true);
     try {
-      const { addDoc, serverTimestamp } = await import("firebase/firestore");
-      await addDoc(collection(db, "services"), {
-        ...newService,
-        lastUpdated: serverTimestamp(),
+      await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newService)
       });
       setNewService({ name: "", version: "", status: "online" });
+      fetchServices();
     } catch (err) {
       console.error(err);
     } finally {
@@ -226,8 +196,8 @@ const AdminPortal = () => {
   const handleDeleteService = async (id: string) => {
     if (!confirm("Are you sure you want to delete this service?")) return;
     try {
-      const { deleteDoc, doc } = await import("firebase/firestore");
-      await deleteDoc(doc(db, "services", id));
+      await fetch(`/api/services/${id}`, { method: 'DELETE' });
+      fetchServices();
     } catch (err) {
       console.error(err);
     }
@@ -339,50 +309,14 @@ const AdminPortal = () => {
 // --- Main App ---
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        // Get role from custom claims
-        const idTokenResult = await firebaseUser.getIdTokenResult();
-        setRole((idTokenResult.claims.role as string) || null);
-        
-        // If role is missing, try to fetch from Firestore as fallback
-        if (!idTokenResult.claims.role) {
-          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-          if (userDoc.exists()) {
-            setRole(userDoc.data().role);
-          }
-        }
-      } else {
-        setUser(null);
-        setRole(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (loading) return <LoadingScreen />;
-
-  if (!user) return <LoginPage />;
-
   return (
     <Router>
       <div className="min-h-screen bg-slate-50">
-        <Navbar user={user} role={role} />
+        <Navbar />
         <main>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route 
-              path="/admin" 
-              element={role === "admin" ? <AdminPortal /> : <Navigate to="/" />} 
-            />
+            <Route path="/admin" element={<AdminPortal />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
