@@ -6,10 +6,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let services: any[] = [
-  { id: 'ex-1', name: 'Authentication API', status: 'online', version: 'v2.4.1', lastUpdated: { seconds: Date.now() / 1000 } },
-  { id: 'ex-2', name: 'Payment Gateway', status: 'maintenance', version: 'v1.0.8', lastUpdated: { seconds: (Date.now() - 3600000) / 1000 } },
-  { id: 'ex-3', name: 'Legacy Database', status: 'offline', version: 'v0.9.2', lastUpdated: { seconds: (Date.now() - 7200000) / 1000 } },
-  { id: 'ex-4', name: 'Image Processing', status: 'online', version: 'v3.1.0', lastUpdated: { seconds: Date.now() / 1000 } },
+  { id: 'ex-1', name: 'Authentication API', status: 'online', version: 'v2.4.1', account: 'NW', env: 'prod', serviceType: 'API', lastUpdated: { seconds: Date.now() / 1000 } },
+  { id: 'ex-2', name: 'Payment Gateway', status: 'maintenance', version: 'v1.0.8', account: 'BB', env: 'uat', serviceType: 'Lambda', lastUpdated: { seconds: (Date.now() - 3600000) / 1000 } },
+  { id: 'ex-3', name: 'Legacy Database', status: 'offline', version: 'v0.9.2', account: 'RBS', env: 'prod', serviceType: 'Fargate', lastUpdated: { seconds: (Date.now() - 7200000) / 1000 } },
+  { id: 'ex-4', name: 'Image Processing', status: 'online', version: 'v3.1.0', account: 'MONZO', env: 'qa', serviceType: 'Lambda', lastUpdated: { seconds: Date.now() / 1000 } },
 ];
 
 async function startServer() {
@@ -24,9 +24,15 @@ async function startServer() {
   });
 
   app.post("/api/services", (req, res) => {
+    const { name, version, status, account, env, serviceType } = req.body;
     const newService = {
       id: Math.random().toString(36).substring(7),
-      ...req.body,
+      name,
+      version,
+      status: status || "online",
+      account: account || "NW",
+      env: env || "sbx",
+      serviceType: serviceType || "API",
       lastUpdated: { seconds: Date.now() / 1000 }
     };
     services.push(newService);
