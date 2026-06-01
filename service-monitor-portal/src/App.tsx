@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
-import { LayoutDashboard, Settings, Activity, Server, Plus, Trash2, RefreshCw, Filter, X, Info } from "lucide-react";
+import { LayoutDashboard, Settings, Activity, Server, Plus, Trash2, RefreshCw, Filter, X, Info, Calendar } from "lucide-react";
 
 const ACCOUNTS = ["057", "058", "074", "075", "076", "080", "081"];
 const BANKS = ["NW", "BB", "GMM", "RBS"];
@@ -8,6 +8,8 @@ const ENVS = ["sbx", "qa", "uat", "prod"];
 const SERVICE_TYPES = ["API", "Lambda", "Fargate"];
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "./lib/utils";
+import MaterialSelect from "./components/MaterialSelect";
+import MaterialDatePicker from "./components/MaterialDatePicker";
 
 // --- Components ---
 
@@ -80,6 +82,20 @@ const Dashboard = () => {
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedEnv, setSelectedEnv] = useState("");
   const [selectedServiceType, setSelectedServiceType] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const today = new Date();
+  const formatDate = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const maxDate = formatDate(today);
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(today.getDate() - 14);
+  const minDate = formatDate(fourteenDaysAgo);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -124,104 +140,92 @@ const Dashboard = () => {
     const matchBank = !selectedBank || service.bank === selectedBank;
     const matchEnv = !selectedEnv || service.env === selectedEnv;
     const matchServiceType = !selectedServiceType || service.serviceType === selectedServiceType;
-    return matchAccount && matchBank && matchEnv && matchServiceType;
+    const matchDate = !selectedDate || (() => {
+      if (!service.lastUpdated?.seconds) return false;
+      const serviceDate = new Date(service.lastUpdated.seconds * 1000);
+      return formatDate(serviceDate) === selectedDate;
+    })();
+    return matchAccount && matchBank && matchEnv && matchServiceType && matchDate;
   });
 
-  const hasActiveFilters = selectedAccount !== "" || selectedBank !== "" || selectedEnv !== "" || selectedServiceType !== "";
+  const hasActiveFilters = selectedAccount !== "" || selectedBank !== "" || selectedEnv !== "" || selectedServiceType !== "" || selectedDate !== "";
 
   const clearFilters = () => {
     setSelectedAccount("");
     setSelectedBank("");
     setSelectedEnv("");
     setSelectedServiceType("");
+    setSelectedDate("");
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-4">
 
       {/* Modern Beautiful Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 mb-8 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-slate-500 mr-2">
+      <div className="bg-white rounded-2xl p-5 mb-8 border border-slate-200 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap items-center gap-4 flex-grow">
+          <div className="flex items-center gap-2 text-slate-500 lg:mr-2 col-span-full lg:col-span-1">
             <Filter className="w-4 h-4 text-blue-600" />
             <span className="text-sm font-bold">Filters:</span>
           </div>
 
           {/* Account Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedAccount}
-              onChange={(e) => setSelectedAccount(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer transition-colors"
-            >
-              <option value="">All Accounts</option>
-              {ACCOUNTS.map(acc => (
-                <option key={acc} value={acc}>{acc}</option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+          <MaterialSelect
+            label="Account"
+            value={selectedAccount}
+            onChange={setSelectedAccount}
+            options={[
+              { value: "", label: "All Accounts" },
+              ...ACCOUNTS.map(acc => ({ value: acc, label: acc }))
+            ]}
+            className="w-full lg:w-44"
+          />
 
           {/* Bank Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedBank}
-              onChange={(e) => setSelectedBank(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer transition-colors"
-            >
-              <option value="">All Banks</option>
-              {BANKS.map(bank => (
-                <option key={bank} value={bank}>{bank}</option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+          <MaterialSelect
+            label="Bank"
+            value={selectedBank}
+            onChange={setSelectedBank}
+            options={[
+              { value: "", label: "All Banks" },
+              ...BANKS.map(bank => ({ value: bank, label: bank }))
+            ]}
+            className="w-full lg:w-36"
+          />
 
           {/* Env Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedEnv}
-              onChange={(e) => setSelectedEnv(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer transition-colors"
-            >
-              <option value="">All Environments</option>
-              {ENVS.map(env => (
-                <option key={env} value={env}>{env.toUpperCase()}</option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+          <MaterialSelect
+            label="Environment"
+            value={selectedEnv}
+            onChange={setSelectedEnv}
+            options={[
+              { value: "", label: "All Environments" },
+              ...ENVS.map(env => ({ value: env, label: env.toUpperCase() }))
+            ]}
+            className="w-full lg:w-44"
+          />
 
           {/* Service Type Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedServiceType}
-              onChange={(e) => setSelectedServiceType(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 pr-8 text-xs font-semibold text-slate-700 hover:border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer transition-colors"
-            >
-              <option value="">All Types</option>
-              {SERVICE_TYPES.map(st => (
-                <option key={st} value={st}>{st}</option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-          </div>
+          <MaterialSelect
+            label="Service Type"
+            value={selectedServiceType}
+            onChange={setSelectedServiceType}
+            options={[
+              { value: "", label: "All Types" },
+              ...SERVICE_TYPES.map(st => ({ value: st, label: st }))
+            ]}
+            className="w-full lg:w-36"
+          />
+
+          {/* Date Selector */}
+          <MaterialDatePicker
+            label="Last Updated"
+            value={selectedDate}
+            onChange={setSelectedDate}
+            minDate={minDate}
+            maxDate={maxDate}
+            className="w-full lg:w-48"
+          />
         </div>
 
         {/* Clear Filters Button */}
@@ -402,92 +406,77 @@ const AdminPortal = () => {
               Add New Service
             </h2>
             <form onSubmit={handleAddService} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Service Name</label>
+              {/* Service Name */}
+              <div className="relative w-full">
                 <input
                   type="text"
                   value={newService.name}
                   onChange={e => setNewService({ ...newService, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="e.g. Auth API"
+                  placeholder=" "
+                  className="peer w-full px-4 py-3 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-sm font-medium transition-all outline-none"
                 />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 origin-left text-sm text-slate-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-xs peer-focus:font-semibold peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:-translate-y-1/2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:font-semibold peer-[:not(:placeholder-shown)]:text-blue-600">
+                  Service Name
+                </span>
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Version</label>
+
+              {/* Version */}
+              <div className="relative w-full">
                 <input
                   type="text"
                   value={newService.version}
                   onChange={e => setNewService({ ...newService, version: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="e.g. v1.2.0"
+                  placeholder=" "
+                  className="peer w-full px-4 py-3 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-sm font-medium transition-all outline-none"
                 />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none transition-all duration-200 origin-left text-sm text-slate-500 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1.5 peer-focus:text-xs peer-focus:font-semibold peer-focus:text-blue-600 peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:-translate-y-1/2 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:font-semibold peer-[:not(:placeholder-shown)]:text-blue-600">
+                  Version
+                </span>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Account</label>
-                <select
-                  value={newService.account}
-                  onChange={e => setNewService({ ...newService, account: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-                >
-                  {ACCOUNTS.map(acc => (
-                    <option key={acc} value={acc}>{acc}</option>
-                  ))}
-                </select>
-              </div>
+              {/* Account Dropdown */}
+              <MaterialSelect
+                label="Account"
+                value={newService.account}
+                onChange={val => setNewService({ ...newService, account: val })}
+                options={ACCOUNTS.map(acc => ({ value: acc, label: acc }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Bank</label>
-                <select
-                  value={newService.bank}
-                  onChange={e => setNewService({ ...newService, bank: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-                >
-                  {BANKS.map(bank => (
-                    <option key={bank} value={bank}>{bank}</option>
-                  ))}
-                </select>
-              </div>
+              {/* Bank Dropdown */}
+              <MaterialSelect
+                label="Bank"
+                value={newService.bank}
+                onChange={val => setNewService({ ...newService, bank: val })}
+                options={BANKS.map(bank => ({ value: bank, label: bank }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Environment</label>
-                <select
-                  value={newService.env}
-                  onChange={e => setNewService({ ...newService, env: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-                >
-                  {ENVS.map(env => (
-                    <option key={env} value={env}>{env.toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
+              {/* Environment Dropdown */}
+              <MaterialSelect
+                label="Environment"
+                value={newService.env}
+                onChange={val => setNewService({ ...newService, env: val })}
+                options={ENVS.map(env => ({ value: env, label: env.toUpperCase() }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Service Type</label>
-                <select
-                  value={newService.serviceType}
-                  onChange={e => setNewService({ ...newService, serviceType: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-                >
-                  {SERVICE_TYPES.map(st => (
-                    <option key={st} value={st}>{st}</option>
-                  ))}
-                </select>
-              </div>
+              {/* Service Type Dropdown */}
+              <MaterialSelect
+                label="Service Type"
+                value={newService.serviceType}
+                onChange={val => setNewService({ ...newService, serviceType: val })}
+                options={SERVICE_TYPES.map(st => ({ value: st, label: st }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Initial Status</label>
-                <select
-                  value={newService.status}
-                  onChange={e => setNewService({ ...newService, status: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-                >
-                  <option value="online">Online</option>
-                  <option value="offline">Offline</option>
-                  <option value="maintenance">Maintenance</option>
-                </select>
-              </div>
+              {/* Initial Status Dropdown */}
+              <MaterialSelect
+                label="Initial Status"
+                value={newService.status}
+                onChange={val => setNewService({ ...newService, status: val })}
+                options={[
+                  { value: "online", label: "Online" },
+                  { value: "offline", label: "Offline" },
+                  { value: "maintenance", label: "Maintenance" }
+                ]}
+              />
 
               <button
                 type="submit"
