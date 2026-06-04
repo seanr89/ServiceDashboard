@@ -50,6 +50,64 @@ async function startServer() {
     res.json({ success: true });
   });
 
+  app.get("/api/services/:id", (req, res) => {
+    const service = services.find(s => s.id === req.params.id);
+    if (!service) return res.status(404).json({ error: "Service not found" });
+    res.json(service);
+  });
+
+  app.get("/api/services/:id/history", (req, res) => {
+    const service = services.find(s => s.id === req.params.id);
+    if (!service) return res.status(404).json({ error: "Service not found" });
+
+    // Generate deterministic mock history based on service.id
+    const hash = service.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    const maintenanceReasons = [
+      "Scheduled database engine upgrade and indices optimization.",
+      "Security patches application and SSL certificates renewal.",
+      "Routine failover verification and backup recovery test.",
+    ];
+    const offlineReasons = [
+      "Network connectivity disruption in the primary availability zone.",
+      "API gateway timeout due to unexpected traffic spike.",
+      "Hardware degradation in primary cluster nodes.",
+    ];
+
+    const history = [
+      {
+        id: "h1",
+        status: service.status,
+        timestamp: service.lastUpdated,
+        description: `Current state verified. Service is fully operational under version ${service.version}.`
+      },
+      {
+        id: "h2",
+        status: hash % 2 === 0 ? "maintenance" : "online",
+        timestamp: { seconds: service.lastUpdated.seconds - 3600 * 4 }, // 4 hrs ago
+        description: hash % 2 === 0 
+          ? maintenanceReasons[hash % maintenanceReasons.length]
+          : "Standard deployment completed. Traffic routed successfully to green cluster."
+      },
+      {
+        id: "h3",
+        status: hash % 3 === 0 ? "offline" : "maintenance",
+        timestamp: { seconds: service.lastUpdated.seconds - 3600 * 12 }, // 12 hrs ago
+        description: hash % 3 === 0
+          ? offlineReasons[hash % offlineReasons.length]
+          : maintenanceReasons[(hash + 1) % maintenanceReasons.length]
+      },
+      {
+        id: "h4",
+        status: "online",
+        timestamp: { seconds: service.lastUpdated.seconds - 3600 * 24 * 3 }, // 3 days ago
+        description: "Initial startup and monitoring hooks initialization successful."
+      }
+    ];
+
+    res.json(history);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

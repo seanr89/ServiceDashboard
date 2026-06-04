@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
-import { LayoutDashboard, Settings, Activity, Server, Plus, Trash2, RefreshCw, Filter, X, Info, Calendar } from "lucide-react";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useParams, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Settings, Activity, Server, Plus, Trash2, RefreshCw, Filter, X, Info, Calendar, ArrowLeft, Clock, Shield } from "lucide-react";
 
-const ACCOUNTS = ["057", "058", "074", "075", "076", "080", "081"];
+interface Account {
+  awsId: number;
+  name: string;
+  title: string;
+}
+
+const ACCOUNTS: Account[] = [
+  { awsId: 111122223333, name: "057", title: "Corporate Banking" },
+  { awsId: 444455556666, name: "058", title: "Retail Dev" },
+  { awsId: 777788889999, name: "074", title: "Global Treasury" },
+  { awsId: 121234345656, name: "075", title: "Venture Capital" },
+  { awsId: 989876765454, name: "076", title: "Asset Management" },
+  { awsId: 545465657676, name: "080", title: "Wealth Admin" },
+  { awsId: 323243435454, name: "081", title: "Securities Ops" },
+];
 const BANKS = ["NW", "BB", "GMM", "RBS"];
 const ENVS = ["sbx", "qa", "uat", "prod"];
 const SERVICE_TYPES = ["API", "Lambda", "Fargate"];
@@ -176,7 +190,7 @@ const Dashboard = () => {
             onChange={setSelectedAccount}
             options={[
               { value: "", label: "All Accounts" },
-              ...ACCOUNTS.map(acc => ({ value: acc, label: acc }))
+              ...ACCOUNTS.map(acc => ({ value: acc.name, label: `${acc.name} - ${acc.title}` }))
             ]}
             className="w-full lg:w-44"
           />
@@ -250,16 +264,16 @@ const Dashboard = () => {
           <NoRecordsFound hasActiveFilters={hasActiveFilters} onReset={clearFilters} />
         ) : (
           displayServices.map((service) => (
-            <motion.div
-              key={service.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className={cn(
-                "bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow relative",
-                service.id.startsWith('ex-') && "border-blue-200 bg-blue-50/30"
-              )}
-            >
+            <Link key={service.id} to={`/service/${service.id}`} className="block transition-transform duration-200 hover:-translate-y-1">
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(
+                  "bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow relative group",
+                  service.id.startsWith('ex-') && "border-blue-200 bg-blue-50/30"
+                )}
+              >
               {service.id.startsWith('ex-') && (
                 <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
                   EXAMPLE
@@ -282,10 +296,25 @@ const Dashboard = () => {
               <h3 className="text-lg font-bold text-slate-900 mb-1">{service.name}</h3>
               
               <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Account</span>
-                  <span className="font-semibold text-slate-950 bg-slate-100 px-2 py-0.5 rounded text-xs">{service.account || "057"}</span>
-                </div>
+                {(() => {
+                  const accInfo = ACCOUNTS.find(a => a.name === service.account) || { name: service.account || "057", title: "Unknown", awsId: 0 };
+                  return (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">Account</span>
+                        <span className="font-semibold text-slate-950 bg-slate-100 px-2 py-0.5 rounded text-xs">{accInfo.name}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">Account Title</span>
+                        <span className="font-medium text-slate-700 text-xs truncate max-w-[150px]">{accInfo.title}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">AWS ID</span>
+                        <span className="font-mono text-slate-600 text-xs">{accInfo.awsId}</span>
+                      </div>
+                    </>
+                  );
+                })()}
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-500">Version</span>
                   <span className="font-mono text-slate-900">{service.version}</span>
@@ -300,9 +329,19 @@ const Dashboard = () => {
 
               {/* Badges for Account, Env, Service Type */}
               <div className="pt-3 border-t border-slate-100 flex gap-1.5 flex-wrap">
-                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-slate-100 text-slate-700 uppercase tracking-wider">
-                  ACC: {service.account || "057"}
-                </span>
+                {(() => {
+                  const accInfo = ACCOUNTS.find(a => a.name === service.account) || { name: service.account || "057", title: "Unknown", awsId: 0 };
+                  return (
+                    <span 
+                      className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-slate-100 text-slate-700 uppercase tracking-wider relative group cursor-help"
+                    >
+                      ACC: {accInfo.name}
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-900 text-white text-[9px] font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap z-50">
+                        {accInfo.title} ({accInfo.awsId})
+                      </span>
+                    </span>
+                  );
+                })()}
                 <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100 uppercase tracking-wider">
                   BANK: {service.bank || "NW"}
                 </span>
@@ -320,12 +359,217 @@ const Dashboard = () => {
                 </span>
               </div>
             </motion.div>
+            </Link>
           ))
         )}
       </div>
     </div>
   );
 };
+
+const ServiceDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [service, setService] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      try {
+        const serviceRes = await fetch(`/api/services/${id}`);
+        if (!serviceRes.ok) throw new Error("Service not found");
+        const serviceData = await serviceRes.json();
+        setService(serviceData);
+
+        const historyRes = await fetch(`/api/services/${id}/history`);
+        if (historyRes.ok) {
+          const historyData = await historyRes.json();
+          setHistory(historyData);
+        }
+      } catch (err: any) {
+        setError(err.message || "Failed to load service detail");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDetail();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-12 text-center text-slate-500 font-medium">
+        <RefreshCw className="w-10 h-10 animate-spin mx-auto text-blue-600 mb-4" />
+        <p>Loading details...</p>
+      </div>
+    );
+  }
+
+  if (error || !service) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-12 text-center bg-white border border-slate-200 rounded-2xl shadow-sm mt-8">
+        <h3 className="text-lg font-bold text-red-600 mb-2">Error</h3>
+        <p className="text-slate-500 mb-6">{error || "Service details could not be found."}</p>
+        <button 
+          onClick={() => navigate("/")}
+          className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          Back to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  const accInfo = ACCOUNTS.find(a => a.name === service.account) || { name: service.account || "057", title: "Unknown", awsId: 0 };
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Back button */}
+      <button 
+        onClick={() => navigate("/")}
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-900 text-sm font-semibold mb-6 transition-colors cursor-pointer group"
+      >
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+        <span>Back to Dashboard</span>
+      </button>
+
+      {/* Main Details Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Card: Summary Details */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm relative overflow-hidden">
+            {/* Header decor */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-blue-600"></div>
+
+            <div className="flex justify-between items-start mb-6">
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl shadow-inner">
+                <Server className="w-8 h-8 text-slate-600" />
+              </div>
+              <div className={cn(
+                "px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                service.status === "online" ? "bg-green-100 text-green-700" :
+                service.status === "offline" ? "bg-red-100 text-red-700" :
+                "bg-amber-100 text-amber-700"
+              )}>
+                {service.status}
+              </div>
+            </div>
+
+            <h1 className="text-xl font-bold text-slate-900 mb-1">{service.name}</h1>
+            <p className="font-mono text-slate-500 text-xs mb-6">ID: {service.id}</p>
+
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Version</span>
+                <span className="font-mono text-sm font-bold text-slate-900">{service.version}</span>
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Environment</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold border bg-slate-50 text-slate-700 uppercase tracking-wider border-slate-200">
+                  {service.env || "sbx"}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Service Type</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold border bg-indigo-50 text-indigo-700 border-indigo-100 uppercase tracking-wider">
+                  {service.serviceType || "API"}
+                </span>
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Bank Partner</span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-extrabold border bg-blue-50 text-blue-700 border-blue-100 uppercase tracking-wider">
+                  {service.bank || "NW"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Account Details Card */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-600" />
+              AWS Account Information
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Account Code</span>
+                <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-xs inline-block">{accInfo.name}</span>
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Account Title</span>
+                <span className="text-sm font-medium text-slate-800">{accInfo.title}</span>
+              </div>
+              <div>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">AWS Account ID</span>
+                <span className="font-mono text-sm text-slate-600">{accInfo.awsId}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Card: Status History Timeline */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-blue-600" />
+              Status Log & Event History
+            </h2>
+
+            {history.length === 0 ? (
+              <div className="p-8 text-center text-slate-400 text-sm">
+                No logs recorded.
+              </div>
+            ) : (
+              <div className="relative pl-6 border-l border-slate-200 ml-3 space-y-8">
+                {history.map((event, idx) => (
+                  <div key={event.id} className="relative">
+                    {/* Timeline dot */}
+                    <div className={cn(
+                      "absolute -left-[31px] top-1 w-4 h-4 rounded-full border-2 border-white ring-4 ring-white flex items-center justify-center",
+                      event.status === "online" ? "bg-green-500" :
+                      event.status === "offline" ? "bg-red-500" :
+                      "bg-amber-500"
+                    )} />
+
+                    {/* Timeline card */}
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 hover:border-slate-200 hover:bg-slate-50/55 transition-all">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider",
+                            event.status === "online" ? "bg-green-100 text-green-700" :
+                            event.status === "offline" ? "bg-red-100 text-red-700" :
+                            "bg-amber-100 text-amber-700"
+                          )}>
+                            {event.status}
+                          </span>
+                          {idx === 0 && (
+                            <span className="bg-blue-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                              Current
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-slate-400 text-xs font-semibold">
+                          {event.timestamp?.seconds 
+                            ? new Date(event.timestamp.seconds * 1000).toLocaleString() 
+                            : "N/A"}
+                        </span>
+                      </div>
+                      <p className="text-slate-600 text-xs leading-relaxed">{event.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 const AdminPortal = () => {
   const [services, setServices] = useState<any[]>([]);
@@ -439,7 +683,7 @@ const AdminPortal = () => {
                 label="Account"
                 value={newService.account}
                 onChange={val => setNewService({ ...newService, account: val })}
-                options={ACCOUNTS.map(acc => ({ value: acc, label: acc }))}
+                options={ACCOUNTS.map(acc => ({ value: acc.name, label: `${acc.name} - ${acc.title}` }))}
               />
 
               {/* Bank Dropdown */}
@@ -508,9 +752,19 @@ const AdminPortal = () => {
                       <td className="px-6 py-4 font-medium text-slate-900">{service.name}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-1.5 flex-wrap">
-                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-slate-100 text-slate-700 uppercase tracking-wider">
-                            ACC: {service.account || "057"}
-                          </span>
+                          {(() => {
+                            const accInfo = ACCOUNTS.find(a => a.name === service.account) || { name: service.account || "057", title: "Unknown", awsId: 0 };
+                            return (
+                              <span 
+                                className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-slate-100 text-slate-700 uppercase tracking-wider relative group cursor-help"
+                              >
+                                ACC: {accInfo.name}
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-900 text-white text-[9px] font-medium py-1.5 px-2.5 rounded-lg shadow-xl whitespace-nowrap z-50">
+                                  {accInfo.title} ({accInfo.awsId})
+                                </span>
+                              </span>
+                            );
+                          })()}
                           <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100 uppercase tracking-wider">
                             BANK: {service.bank || "NW"}
                           </span>
@@ -569,6 +823,7 @@ export default function App() {
         <main>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/service/:id" element={<ServiceDetail />} />
             <Route path="/admin" element={<AdminPortal />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
