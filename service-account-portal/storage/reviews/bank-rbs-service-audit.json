@@ -1,0 +1,47 @@
+{
+  "id": "review-rbs-4410",
+  "generatedAt": "2026-08-11T19:30:00.000Z",
+  "title": "RBS Bank Records & Service Telemetry",
+  "account": {
+    "awsId": 777788889999,
+    "name": "074",
+    "title": "Global Treasury",
+    "clusterName": "eks-treasury-eu-west-1",
+    "region": "eu-west-1",
+    "clusterStatus": "degraded",
+    "nodesCount": 16,
+    "attachedBank": {
+      "code": "RBS",
+      "name": "Royal Bank of Scotland",
+      "routingCode": "83-04-11",
+      "swiftBic": "RBOSGB2L",
+      "settlementAccount": "GB91RBOS83041187654321",
+      "ledgerId": "LEDGER-TREASURY-074",
+      "complianceStatus": "Audited",
+      "dailyLimitUsd": 120000000
+    }
+  },
+  "services": [
+    {
+      "id": "ex-3",
+      "name": "Legacy Database",
+      "status": "offline",
+      "version": "v0.9.2",
+      "serviceType": "Fargate",
+      "env": "prod",
+      "activeConnections": 0,
+      "latencyMs": 0
+    },
+    {
+      "id": "ex-5",
+      "name": "Notification Dispatcher",
+      "status": "online",
+      "version": "v1.2.0",
+      "serviceType": "Lambda",
+      "env": "qa",
+      "activeConnections": 310,
+      "latencyMs": 22
+    }
+  ],
+  "reviewNotes": "Flagged offline status on Legacy Database service. Scheduled primary node failover test."
+}
