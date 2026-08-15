@@ -1,0 +1,87 @@
+{
+  "id": "scan-075-3390",
+  "generatedAt": "2026-08-15T16:00:00.000Z",
+  "title": "Account 075 - Venture Capital Cluster Scan Report",
+  "account": {
+    "awsId": 121234345656,
+    "name": "075",
+    "title": "Venture Capital",
+    "clusterName": "fargate-vc-us-west-2",
+    "region": "us-west-2",
+    "clusterStatus": "healthy",
+    "availability": "available",
+    "nodesCount": 8,
+    "attachedBank": {
+      "code": "NW",
+      "name": "NatWest Group",
+      "routingCode": "60-12-35",
+      "swiftBic": "NWBKGB2L",
+      "settlementAccount": "GB82NWBK60123511223344",
+      "ledgerId": "LEDGER-VC-075",
+      "complianceStatus": "Passed",
+      "dailyLimitUsd": 30000000
+    },
+    "lastScan": {
+      "scanId": "scan-075-3390",
+      "timestamp": "2026-08-15T16:00:00.000Z",
+      "status": "passed",
+      "totalServices": 1,
+      "onlineServices": 1,
+      "maintenanceServices": 0,
+      "offlineServices": 0,
+      "latencyAvgMs": 32,
+      "bankVerified": true,
+      "complianceScore": 99,
+      "filename": "account-075-vc-scan.json",
+      "summary": "Image Processing Lambda running nominal with 890 active connections.",
+      "servicesSnapshot": [
+        {
+          "name": "Image Processing",
+          "status": "online",
+          "version": "v3.1.0",
+          "latencyMs": 32
+        }
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "ex-4",
+      "name": "Image Processing",
+      "status": "online",
+      "version": "v3.1.0",
+      "account": "075",
+      "bank": "NW",
+      "env": "qa",
+      "serviceType": "Lambda",
+      "lastUpdated": {
+        "seconds": 1786810506.877
+      },
+      "activeConnections": 890,
+      "latencyMs": 32
+    }
+  ],
+  "lastScanMetadata": {
+    "scanId": "scan-075-3390",
+    "timestamp": "2026-08-15T16:00:00.000Z",
+    "status": "passed",
+    "totalServices": 1,
+    "onlineServices": 1,
+    "maintenanceServices": 0,
+    "offlineServices": 0,
+    "latencyAvgMs": 32,
+    "bankVerified": true,
+    "complianceScore": 99,
+    "filename": "account-075-vc-scan.json",
+    "summary": "Image Processing Lambda running nominal with 890 active connections.",
+    "servicesSnapshot": [
+      {
+        "name": "Image Processing",
+        "status": "online",
+        "version": "v3.1.0",
+        "latencyMs": 32
+      }
+    ]
+  },
+  "reviewNotes": "Image Processing Lambda running nominal with 890 active connections."
+}

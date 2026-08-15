@@ -1,0 +1,87 @@
+{
+  "id": "scan-081-5501",
+  "generatedAt": "2026-08-15T15:00:00.000Z",
+  "title": "Account 081 - Securities Ops Cluster Scan Report",
+  "account": {
+    "awsId": 323243435454,
+    "name": "081",
+    "title": "Securities Ops",
+    "clusterName": "eks-securities-sa-east-1",
+    "region": "sa-east-1",
+    "clusterStatus": "degraded",
+    "availability": "available",
+    "nodesCount": 6,
+    "attachedBank": {
+      "code": "JPMC",
+      "name": "JPMorgan Chase",
+      "routingCode": "02-10-00",
+      "swiftBic": "CHASUS33",
+      "settlementAccount": "US12CHAS02100077889900",
+      "ledgerId": "LEDGER-SEC-081",
+      "complianceStatus": "Pending Review",
+      "dailyLimitUsd": 150000000
+    },
+    "lastScan": {
+      "scanId": "scan-081-5501",
+      "timestamp": "2026-08-15T15:00:00.000Z",
+      "status": "warning",
+      "totalServices": 1,
+      "onlineServices": 0,
+      "maintenanceServices": 0,
+      "offlineServices": 1,
+      "latencyAvgMs": 0,
+      "bankVerified": true,
+      "complianceScore": 80,
+      "filename": "account-081-securities-scan.json",
+      "summary": "Customer Analytics Fargate task marked offline in sandbox. Node scaling requested.",
+      "servicesSnapshot": [
+        {
+          "name": "Customer Analytics",
+          "status": "offline",
+          "version": "v0.5.4",
+          "latencyMs": 0
+        }
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "ex-7",
+      "name": "Customer Analytics",
+      "status": "offline",
+      "version": "v0.5.4",
+      "account": "081",
+      "bank": "JPMC",
+      "env": "sbx",
+      "serviceType": "Fargate",
+      "lastUpdated": {
+        "seconds": 1786796106.877
+      },
+      "activeConnections": 0,
+      "latencyMs": 0
+    }
+  ],
+  "lastScanMetadata": {
+    "scanId": "scan-081-5501",
+    "timestamp": "2026-08-15T15:00:00.000Z",
+    "status": "warning",
+    "totalServices": 1,
+    "onlineServices": 0,
+    "maintenanceServices": 0,
+    "offlineServices": 1,
+    "latencyAvgMs": 0,
+    "bankVerified": true,
+    "complianceScore": 80,
+    "filename": "account-081-securities-scan.json",
+    "summary": "Customer Analytics Fargate task marked offline in sandbox. Node scaling requested.",
+    "servicesSnapshot": [
+      {
+        "name": "Customer Analytics",
+        "status": "offline",
+        "version": "v0.5.4",
+        "latencyMs": 0
+      }
+    ]
+  },
+  "reviewNotes": "Customer Analytics Fargate task marked offline in sandbox. Node scaling requested."
+}

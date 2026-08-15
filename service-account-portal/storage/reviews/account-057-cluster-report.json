@@ -1,0 +1,47 @@
+{
+  "id": "review-057-9812",
+  "generatedAt": "2026-08-11T20:15:00.000Z",
+  "title": "Account 057 - Corporate Banking Cluster Audit",
+  "account": {
+    "awsId": 111122223333,
+    "name": "057",
+    "title": "Corporate Banking",
+    "clusterName": "prod-cluster-us-east-1a",
+    "region": "us-east-1",
+    "clusterStatus": "healthy",
+    "nodesCount": 24,
+    "attachedBank": {
+      "code": "NW",
+      "name": "NatWest Group",
+      "routingCode": "60-12-34",
+      "swiftBic": "NWBKGB2L",
+      "settlementAccount": "GB82NWBK60123412345678",
+      "ledgerId": "LEDGER-CORP-057",
+      "complianceStatus": "Passed",
+      "dailyLimitUsd": 50000000
+    }
+  },
+  "services": [
+    {
+      "id": "ex-1",
+      "name": "Authentication API",
+      "status": "online",
+      "version": "v2.4.1",
+      "serviceType": "API",
+      "env": "prod",
+      "activeConnections": 1420,
+      "latencyMs": 14
+    },
+    {
+      "id": "ex-8",
+      "name": "Audit Logging Service",
+      "status": "maintenance",
+      "version": "v1.1.2",
+      "serviceType": "API",
+      "env": "uat",
+      "activeConnections": 45,
+      "latencyMs": 88
+    }
+  ],
+  "reviewNotes": "Quarterly infrastructure review completed. Cluster healthy. Compliance checks verified for NatWest settlement ledger."
+}
