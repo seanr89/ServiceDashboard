@@ -1,0 +1,114 @@
+{
+  "id": "scan-058-4420",
+  "generatedAt": "2026-08-15T16:30:00.000Z",
+  "title": "Account 058 - Retail Dev Cluster Scan Report",
+  "account": {
+    "awsId": 444455556666,
+    "name": "058",
+    "title": "Retail Dev",
+    "clusterName": "uat-cluster-eu-west-1b",
+    "region": "eu-west-1",
+    "clusterStatus": "healthy",
+    "availability": "available",
+    "nodesCount": 12,
+    "attachedBank": {
+      "code": "BB",
+      "name": "Barclays Bank",
+      "routingCode": "20-00-00",
+      "swiftBic": "BARCGB22",
+      "settlementAccount": "GB14BARC20000098765432",
+      "ledgerId": "LEDGER-RETAIL-058",
+      "complianceStatus": "Passed",
+      "dailyLimitUsd": 25000000
+    },
+    "lastScan": {
+      "scanId": "scan-058-4420",
+      "timestamp": "2026-08-15T16:30:00.000Z",
+      "status": "passed",
+      "totalServices": 2,
+      "onlineServices": 1,
+      "maintenanceServices": 1,
+      "offlineServices": 0,
+      "latencyAvgMs": 32,
+      "bankVerified": true,
+      "complianceScore": 96,
+      "filename": "account-058-retail-scan.json",
+      "summary": "Payment Gateway in maintenance for routine patch. Reporting Engine online with 19ms latency.",
+      "servicesSnapshot": [
+        {
+          "name": "Reporting Engine",
+          "status": "online",
+          "version": "v3.0.0",
+          "latencyMs": 19
+        },
+        {
+          "name": "Payment Gateway",
+          "status": "maintenance",
+          "version": "v1.0.8",
+          "latencyMs": 45
+        }
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "ex-2",
+      "name": "Payment Gateway",
+      "status": "maintenance",
+      "version": "v1.0.8",
+      "account": "058",
+      "bank": "BB",
+      "env": "uat",
+      "serviceType": "Lambda",
+      "lastUpdated": {
+        "seconds": 1786806906.877
+      },
+      "activeConnections": 240,
+      "latencyMs": 45
+    },
+    {
+      "id": "ex-9",
+      "name": "Reporting Engine",
+      "status": "online",
+      "version": "v3.0.0",
+      "account": "058",
+      "bank": "BB",
+      "env": "prod",
+      "serviceType": "Fargate",
+      "lastUpdated": {
+        "seconds": 1786810506.877
+      },
+      "activeConnections": 1100,
+      "latencyMs": 19
+    }
+  ],
+  "lastScanMetadata": {
+    "scanId": "scan-058-4420",
+    "timestamp": "2026-08-15T16:30:00.000Z",
+    "status": "passed",
+    "totalServices": 2,
+    "onlineServices": 1,
+    "maintenanceServices": 1,
+    "offlineServices": 0,
+    "latencyAvgMs": 32,
+    "bankVerified": true,
+    "complianceScore": 96,
+    "filename": "account-058-retail-scan.json",
+    "summary": "Payment Gateway in maintenance for routine patch. Reporting Engine online with 19ms latency.",
+    "servicesSnapshot": [
+      {
+        "name": "Reporting Engine",
+        "status": "online",
+        "version": "v3.0.0",
+        "latencyMs": 19
+      },
+      {
+        "name": "Payment Gateway",
+        "status": "maintenance",
+        "version": "v1.0.8",
+        "latencyMs": 45
+      }
+    ]
+  },
+  "reviewNotes": "Payment Gateway in maintenance for routine patch. Reporting Engine online with 19ms latency."
+}

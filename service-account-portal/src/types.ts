@@ -9,6 +9,27 @@ export interface BankRecord {
   dailyLimitUsd: number;
 }
 
+export interface LastScanRecord {
+  scanId: string;
+  timestamp: string;
+  status: 'passed' | 'warning' | 'critical' | 'audited';
+  totalServices: number;
+  onlineServices: number;
+  maintenanceServices: number;
+  offlineServices: number;
+  latencyAvgMs: number;
+  bankVerified: boolean;
+  complianceScore: number;
+  filename: string;
+  summary: string;
+  servicesSnapshot: {
+    name: string;
+    status: string;
+    version: string;
+    latencyMs?: number;
+  }[];
+}
+
 export interface AccountInfo {
   awsId: number;
   name: string;
@@ -16,8 +37,10 @@ export interface AccountInfo {
   clusterName: string;
   region: string;
   clusterStatus: 'healthy' | 'degraded' | 'maintenance';
+  availability: 'available' | 'maintenance' | 'offline';
   nodesCount: number;
   attachedBank: BankRecord;
+  lastScan?: LastScanRecord;
 }
 
 export interface ServiceItem {

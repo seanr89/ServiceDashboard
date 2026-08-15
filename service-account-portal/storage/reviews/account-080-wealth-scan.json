@@ -1,0 +1,87 @@
+{
+  "id": "scan-080-6644",
+  "generatedAt": "2026-08-15T15:30:00.000Z",
+  "title": "Account 080 - Wealth Admin Cluster Scan Report",
+  "account": {
+    "awsId": 545465657676,
+    "name": "080",
+    "title": "Wealth Admin",
+    "clusterName": "cluster-wealth-prod-01",
+    "region": "us-east-1",
+    "clusterStatus": "healthy",
+    "availability": "available",
+    "nodesCount": 18,
+    "attachedBank": {
+      "code": "GMM",
+      "name": "Global Money Management",
+      "routingCode": "90-11-22",
+      "swiftBic": "GMMUS33X",
+      "settlementAccount": "US99GMMU90112255667788",
+      "ledgerId": "LEDGER-WEALTH-080",
+      "complianceStatus": "Passed",
+      "dailyLimitUsd": 100000000
+    },
+    "lastScan": {
+      "scanId": "scan-080-6644",
+      "timestamp": "2026-08-15T15:30:00.000Z",
+      "status": "passed",
+      "totalServices": 1,
+      "onlineServices": 1,
+      "maintenanceServices": 0,
+      "offlineServices": 0,
+      "latencyAvgMs": 8,
+      "bankVerified": true,
+      "complianceScore": 100,
+      "filename": "account-080-wealth-scan.json",
+      "summary": "Transaction Processor API verified under 8ms response latency and high throughput.",
+      "servicesSnapshot": [
+        {
+          "name": "Transaction Processor",
+          "status": "online",
+          "version": "v2.0.1",
+          "latencyMs": 8
+        }
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "ex-6",
+      "name": "Transaction Processor",
+      "status": "online",
+      "version": "v2.0.1",
+      "account": "080",
+      "bank": "GMM",
+      "env": "prod",
+      "serviceType": "API",
+      "lastUpdated": {
+        "seconds": 1786810506.877
+      },
+      "activeConnections": 3450,
+      "latencyMs": 8
+    }
+  ],
+  "lastScanMetadata": {
+    "scanId": "scan-080-6644",
+    "timestamp": "2026-08-15T15:30:00.000Z",
+    "status": "passed",
+    "totalServices": 1,
+    "onlineServices": 1,
+    "maintenanceServices": 0,
+    "offlineServices": 0,
+    "latencyAvgMs": 8,
+    "bankVerified": true,
+    "complianceScore": 100,
+    "filename": "account-080-wealth-scan.json",
+    "summary": "Transaction Processor API verified under 8ms response latency and high throughput.",
+    "servicesSnapshot": [
+      {
+        "name": "Transaction Processor",
+        "status": "online",
+        "version": "v2.0.1",
+        "latencyMs": 8
+      }
+    ]
+  },
+  "reviewNotes": "Transaction Processor API verified under 8ms response latency and high throughput."
+}

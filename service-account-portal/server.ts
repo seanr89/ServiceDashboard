@@ -12,7 +12,7 @@ if (!fs.existsSync(REVIEWS_DIR)) {
   fs.mkdirSync(REVIEWS_DIR, { recursive: true });
 }
 
-// Master Accounts with Cluster Names & Attached Bank Records
+// Master Accounts with Cluster Names, Availability & Attached Bank Records
 export const ACCOUNTS_DATA = [
   {
     awsId: 111122223333,
@@ -21,6 +21,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "prod-cluster-us-east-1a",
     region: "us-east-1",
     clusterStatus: "healthy",
+    availability: "available",
     nodesCount: 24,
     attachedBank: {
       code: "NW",
@@ -31,6 +32,24 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-CORP-057",
       complianceStatus: "Passed",
       dailyLimitUsd: 50000000
+    },
+    lastScan: {
+      scanId: "scan-057-8912",
+      timestamp: "2026-08-15T16:45:00.000Z",
+      status: "passed",
+      totalServices: 2,
+      onlineServices: 1,
+      maintenanceServices: 1,
+      offlineServices: 0,
+      latencyAvgMs: 51,
+      bankVerified: true,
+      complianceScore: 98,
+      filename: "account-057-cluster-report.json",
+      summary: "Verified 2 services across cluster prod-cluster-us-east-1a. NatWest settlement ledger in compliance.",
+      servicesSnapshot: [
+        { name: "Authentication API", status: "online", version: "v2.4.1", latencyMs: 14 },
+        { name: "Audit Logging Service", status: "maintenance", version: "v1.1.2", latencyMs: 88 }
+      ]
     }
   },
   {
@@ -40,6 +59,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "uat-cluster-eu-west-1b",
     region: "eu-west-1",
     clusterStatus: "healthy",
+    availability: "available",
     nodesCount: 12,
     attachedBank: {
       code: "BB",
@@ -50,6 +70,24 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-RETAIL-058",
       complianceStatus: "Passed",
       dailyLimitUsd: 25000000
+    },
+    lastScan: {
+      scanId: "scan-058-4420",
+      timestamp: "2026-08-15T16:30:00.000Z",
+      status: "passed",
+      totalServices: 2,
+      onlineServices: 1,
+      maintenanceServices: 1,
+      offlineServices: 0,
+      latencyAvgMs: 32,
+      bankVerified: true,
+      complianceScore: 96,
+      filename: "account-058-retail-scan.json",
+      summary: "Payment Gateway in maintenance for routine patch. Reporting Engine online with 19ms latency.",
+      servicesSnapshot: [
+        { name: "Reporting Engine", status: "online", version: "v3.0.0", latencyMs: 19 },
+        { name: "Payment Gateway", status: "maintenance", version: "v1.0.8", latencyMs: 45 }
+      ]
     }
   },
   {
@@ -59,6 +97,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "eks-treasury-eu-west-1",
     region: "eu-west-1",
     clusterStatus: "degraded",
+    availability: "available",
     nodesCount: 16,
     attachedBank: {
       code: "RBS",
@@ -69,6 +108,23 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-TREASURY-074",
       complianceStatus: "Audited",
       dailyLimitUsd: 120000000
+    },
+    lastScan: {
+      scanId: "scan-074-7711",
+      timestamp: "2026-08-15T16:15:00.000Z",
+      status: "warning",
+      totalServices: 1,
+      onlineServices: 0,
+      maintenanceServices: 0,
+      offlineServices: 1,
+      latencyAvgMs: 0,
+      bankVerified: true,
+      complianceScore: 84,
+      filename: "bank-rbs-service-audit.json",
+      summary: "Legacy Database reported offline. Failover replication protocol engaged.",
+      servicesSnapshot: [
+        { name: "Legacy Database", status: "offline", version: "v0.9.2", latencyMs: 0 }
+      ]
     }
   },
   {
@@ -78,6 +134,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "fargate-vc-us-west-2",
     region: "us-west-2",
     clusterStatus: "healthy",
+    availability: "available",
     nodesCount: 8,
     attachedBank: {
       code: "NW",
@@ -88,6 +145,23 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-VC-075",
       complianceStatus: "Passed",
       dailyLimitUsd: 30000000
+    },
+    lastScan: {
+      scanId: "scan-075-3390",
+      timestamp: "2026-08-15T16:00:00.000Z",
+      status: "passed",
+      totalServices: 1,
+      onlineServices: 1,
+      maintenanceServices: 0,
+      offlineServices: 0,
+      latencyAvgMs: 32,
+      bankVerified: true,
+      complianceScore: 99,
+      filename: "account-075-vc-scan.json",
+      summary: "Image Processing Lambda running nominal with 890 active connections.",
+      servicesSnapshot: [
+        { name: "Image Processing", status: "online", version: "v3.1.0", latencyMs: 32 }
+      ]
     }
   },
   {
@@ -97,6 +171,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "eks-asset-ap-southeast-1",
     region: "ap-southeast-1",
     clusterStatus: "maintenance",
+    availability: "available",
     nodesCount: 10,
     attachedBank: {
       code: "HSBC",
@@ -107,6 +182,23 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-ASSET-076",
       complianceStatus: "Pending Review",
       dailyLimitUsd: 75000000
+    },
+    lastScan: {
+      scanId: "scan-076-1209",
+      timestamp: "2026-08-15T15:45:00.000Z",
+      status: "passed",
+      totalServices: 1,
+      onlineServices: 1,
+      maintenanceServices: 0,
+      offlineServices: 0,
+      latencyAvgMs: 22,
+      bankVerified: true,
+      complianceScore: 92,
+      filename: "account-076-asset-scan.json",
+      summary: "Notification Dispatcher operating normally. Cluster nodes undergo scheduled rolling refresh.",
+      servicesSnapshot: [
+        { name: "Notification Dispatcher", status: "online", version: "v1.2.0", latencyMs: 22 }
+      ]
     }
   },
   {
@@ -116,6 +208,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "cluster-wealth-prod-01",
     region: "us-east-1",
     clusterStatus: "healthy",
+    availability: "available",
     nodesCount: 18,
     attachedBank: {
       code: "GMM",
@@ -126,6 +219,23 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-WEALTH-080",
       complianceStatus: "Passed",
       dailyLimitUsd: 100000000
+    },
+    lastScan: {
+      scanId: "scan-080-6644",
+      timestamp: "2026-08-15T15:30:00.000Z",
+      status: "passed",
+      totalServices: 1,
+      onlineServices: 1,
+      maintenanceServices: 0,
+      offlineServices: 0,
+      latencyAvgMs: 8,
+      bankVerified: true,
+      complianceScore: 100,
+      filename: "account-080-wealth-scan.json",
+      summary: "Transaction Processor API verified under 8ms response latency and high throughput.",
+      servicesSnapshot: [
+        { name: "Transaction Processor", status: "online", version: "v2.0.1", latencyMs: 8 }
+      ]
     }
   },
   {
@@ -135,6 +245,7 @@ export const ACCOUNTS_DATA = [
     clusterName: "eks-securities-sa-east-1",
     region: "sa-east-1",
     clusterStatus: "degraded",
+    availability: "available",
     nodesCount: 6,
     attachedBank: {
       code: "JPMC",
@@ -145,6 +256,23 @@ export const ACCOUNTS_DATA = [
       ledgerId: "LEDGER-SEC-081",
       complianceStatus: "Pending Review",
       dailyLimitUsd: 150000000
+    },
+    lastScan: {
+      scanId: "scan-081-5501",
+      timestamp: "2026-08-15T15:00:00.000Z",
+      status: "warning",
+      totalServices: 1,
+      onlineServices: 0,
+      maintenanceServices: 0,
+      offlineServices: 1,
+      latencyAvgMs: 0,
+      bankVerified: true,
+      complianceScore: 80,
+      filename: "account-081-securities-scan.json",
+      summary: "Customer Analytics Fargate task marked offline in sandbox. Node scaling requested.",
+      servicesSnapshot: [
+        { name: "Customer Analytics", status: "offline", version: "v0.5.4", latencyMs: 0 }
+      ]
     }
   }
 ];
@@ -160,6 +288,29 @@ let services: any[] = [
   { id: 'ex-8', name: 'Audit Logging Service', status: 'maintenance', version: 'v1.1.2', account: '057', bank: 'NW', env: 'uat', serviceType: 'API', lastUpdated: { seconds: (Date.now() - 1800000) / 1000 }, activeConnections: 45, latencyMs: 88 },
   { id: 'ex-9', name: 'Reporting Engine', status: 'online', version: 'v3.0.0', account: '058', bank: 'BB', env: 'prod', serviceType: 'Fargate', lastUpdated: { seconds: Date.now() / 1000 }, activeConnections: 1100, latencyMs: 19 },
 ];
+
+// Initialize sample review files in storage/reviews
+function initializeSampleFiles() {
+  ACCOUNTS_DATA.forEach(acc => {
+    if (acc.lastScan) {
+      const filePath = path.join(REVIEWS_DIR, acc.lastScan.filename);
+      if (!fs.existsSync(filePath)) {
+        const payload = {
+          id: acc.lastScan.scanId,
+          generatedAt: acc.lastScan.timestamp,
+          title: `Account ${acc.name} - ${acc.title} Cluster Scan Report`,
+          account: acc,
+          services: services.filter(s => s.account === acc.name),
+          lastScanMetadata: acc.lastScan,
+          reviewNotes: acc.lastScan.summary
+        };
+        fs.writeFileSync(filePath, JSON.stringify(payload, null, 2), 'utf-8');
+      }
+    }
+  });
+}
+
+initializeSampleFiles();
 
 async function startServer() {
   const app = express();
@@ -212,12 +363,44 @@ async function startServer() {
 
     const targetAccount = ACCOUNTS_DATA.find(a => a.name === accountName) || ACCOUNTS_DATA[0];
 
+    const onlineCount = filtered.filter(s => s.status === 'online').length;
+    const maintCount = filtered.filter(s => s.status === 'maintenance').length;
+    const offlineCount = filtered.filter(s => s.status === 'offline').length;
+    const avgLatency = filtered.length > 0
+      ? Math.round(filtered.reduce((acc, s) => acc + (s.latencyMs || 20), 0) / filtered.length)
+      : 25;
+
+    const scanRecord = {
+      scanId: `scan-${targetAccount.name}-${Date.now().toString(36)}`,
+      timestamp: new Date().toISOString(),
+      status: offlineCount > 0 ? "warning" : "passed",
+      totalServices: filtered.length,
+      onlineServices: onlineCount,
+      maintenanceServices: maintCount,
+      offlineServices: offlineCount,
+      latencyAvgMs: avgLatency,
+      bankVerified: true,
+      complianceScore: offlineCount > 0 ? 85 : 98,
+      filename: `account-${targetAccount.name}-scan-${Date.now()}.json`,
+      summary: notes || `Scan completed for ${targetAccount.title} on cluster ${targetAccount.clusterName}.`,
+      servicesSnapshot: filtered.map(s => ({
+        name: s.name,
+        status: s.status,
+        version: s.version,
+        latencyMs: s.latencyMs
+      }))
+    };
+
+    // Update in-memory lastScan for the account
+    targetAccount.lastScan = scanRecord as any;
+
     const snapshot = {
-      id: `audit-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 6)}`,
-      generatedAt: new Date().toISOString(),
+      id: scanRecord.scanId,
+      generatedAt: scanRecord.timestamp,
       title: `Service Audit Report - Account ${targetAccount.name} (${targetAccount.clusterName})`,
       account: targetAccount,
       services: filtered,
+      lastScanMetadata: scanRecord,
       reviewNotes: notes || `Automated request compilation for ${targetAccount.title}. Bank attached: ${targetAccount.attachedBank.name} (${targetAccount.attachedBank.code}).`
     };
 
@@ -250,7 +433,7 @@ async function startServer() {
           id: fileData?.id || fn,
           accountName: fileData?.account?.name || null,
           bankCode: fileData?.account?.attachedBank?.code || null,
-          reviewNotes: fileData?.reviewNotes || null
+          reviewNotes: fileData?.reviewNotes || fileData?.lastScanMetadata?.summary || null
         };
       });
       res.json(filesList);

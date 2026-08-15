@@ -1,0 +1,87 @@
+{
+  "id": "scan-076-1209",
+  "generatedAt": "2026-08-15T15:45:00.000Z",
+  "title": "Account 076 - Asset Management Cluster Scan Report",
+  "account": {
+    "awsId": 989876765454,
+    "name": "076",
+    "title": "Asset Management",
+    "clusterName": "eks-asset-ap-southeast-1",
+    "region": "ap-southeast-1",
+    "clusterStatus": "maintenance",
+    "availability": "available",
+    "nodesCount": 10,
+    "attachedBank": {
+      "code": "HSBC",
+      "name": "HSBC Global Finance",
+      "routingCode": "40-05-15",
+      "swiftBic": "MIDLGB22",
+      "settlementAccount": "GB44MIDL40051533445566",
+      "ledgerId": "LEDGER-ASSET-076",
+      "complianceStatus": "Pending Review",
+      "dailyLimitUsd": 75000000
+    },
+    "lastScan": {
+      "scanId": "scan-076-1209",
+      "timestamp": "2026-08-15T15:45:00.000Z",
+      "status": "passed",
+      "totalServices": 1,
+      "onlineServices": 1,
+      "maintenanceServices": 0,
+      "offlineServices": 0,
+      "latencyAvgMs": 22,
+      "bankVerified": true,
+      "complianceScore": 92,
+      "filename": "account-076-asset-scan.json",
+      "summary": "Notification Dispatcher operating normally. Cluster nodes undergo scheduled rolling refresh.",
+      "servicesSnapshot": [
+        {
+          "name": "Notification Dispatcher",
+          "status": "online",
+          "version": "v1.2.0",
+          "latencyMs": 22
+        }
+      ]
+    }
+  },
+  "services": [
+    {
+      "id": "ex-5",
+      "name": "Notification Dispatcher",
+      "status": "online",
+      "version": "v1.2.0",
+      "account": "076",
+      "bank": "HSBC",
+      "env": "qa",
+      "serviceType": "Lambda",
+      "lastUpdated": {
+        "seconds": 1786810506.877
+      },
+      "activeConnections": 310,
+      "latencyMs": 22
+    }
+  ],
+  "lastScanMetadata": {
+    "scanId": "scan-076-1209",
+    "timestamp": "2026-08-15T15:45:00.000Z",
+    "status": "passed",
+    "totalServices": 1,
+    "onlineServices": 1,
+    "maintenanceServices": 0,
+    "offlineServices": 0,
+    "latencyAvgMs": 22,
+    "bankVerified": true,
+    "complianceScore": 92,
+    "filename": "account-076-asset-scan.json",
+    "summary": "Notification Dispatcher operating normally. Cluster nodes undergo scheduled rolling refresh.",
+    "servicesSnapshot": [
+      {
+        "name": "Notification Dispatcher",
+        "status": "online",
+        "version": "v1.2.0",
+        "latencyMs": 22
+      }
+    ]
+  },
+  "reviewNotes": "Notification Dispatcher operating normally. Cluster nodes undergo scheduled rolling refresh."
+}

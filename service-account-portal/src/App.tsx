@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { DashboardView } from './views/DashboardView';
 import { AccountsView } from './views/AccountsView';
 import { RequestServiceView } from './views/RequestServiceView';
 import { FileReviewView } from './views/FileReviewView';
@@ -92,6 +93,18 @@ export default function App() {
           <Routes>
             <Route
               path="/"
+              element={
+                <DashboardView
+                  accounts={accounts}
+                  services={services}
+                  loading={loading}
+                  onRefresh={loadData}
+                  onRequestAudit={(acc) => handleOpenRequestModal(acc)}
+                />
+              }
+            />
+            <Route
+              path="/accounts"
               element={
                 <AccountsView
                   accounts={accounts}
