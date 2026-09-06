@@ -5,10 +5,9 @@ import { ShieldCheck, Cpu, HardDriveDownload, Send, LayoutDashboard, Activity, S
 interface NavbarProps {
   filesCount?: number;
   accountsCount?: number;
-  onRequestClick?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ filesCount = 0, accountsCount = 7, onRequestClick }) => {
+export const Navbar: React.FC<NavbarProps> = ({ filesCount = 0, accountsCount = 7 }) => {
   return (
     <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,12 +19,12 @@ export const Navbar: React.FC<NavbarProps> = ({ filesCount = 0, accountsCount = 
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-100 text-lg tracking-tight">ServiceAudit</span>
+                <span className="font-extrabold text-slate-100 text-lg tracking-tight">Service Account</span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-400 border border-cyan-800/50">
                   Local Files v1.0
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">Account Clusters & Bank Records Portal</p>
+              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">Account Records Portal</p>
             </div>
           </NavLink>
 
@@ -96,17 +95,6 @@ export const Navbar: React.FC<NavbarProps> = ({ filesCount = 0, accountsCount = 
               )}
             </NavLink>
           </nav>
-
-          {/* Quick Actions */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={onRequestClick}
-              className="flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-500/10 cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Request Audit Payload</span>
-            </button>
-          </div>
         </div>
       </div>
     </header>
